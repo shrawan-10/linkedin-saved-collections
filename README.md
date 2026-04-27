@@ -60,6 +60,27 @@ The goal was to feel like a natural extension of LinkedIn, not a redesign — so
 
 ---
 
+## APIs & Services Used
+
+| Service | Purpose | Endpoint |
+|---|---|---|
+| [unavatar.io](https://unavatar.io) | Fetch LinkedIn profile photos by username | `https://unavatar.io/linkedin/{username}` |
+| [Smashing Magazine CDN](https://www.smashingmagazine.com) | Post thumbnail images for Design Token and UX Impact articles | `https://files.smashing.media/articles/...` |
+| [Wixstatic CDN](https://www.humantific.com) | HUMANTIFIC book cover (Innovation Methods Mapping) | `https://static.wixstatic.com/media/...` |
+| [Anima Blog](https://www.animaapp.com/blog) | Figma-to-HTML post thumbnail | `https://www.animaapp.com/blog/wp-content/...` |
+
+### Profile photos resolved via unavatar.io
+
+| Author | LinkedIn Username |
+|---|---|
+| Vitaly Friedman | `vitalyfriedman` |
+| GK VanPatter | `gkvanpatter` |
+| Robin Holesinsky | `rholesinsky` |
+
+> `unavatar.io` proxies public social profile images — no API key required. Falls back to styled initials if the image fails to load.
+
+---
+
 ## Live Demo
 
 [View on Vercel →](https://linkedin-saved-collections.vercel.app)
