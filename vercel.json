@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/linkedin-saved-collections.html" }
+    { "source": "/", "destination": "/linkedin-saved-collections/index.html" }
   ]
 }
