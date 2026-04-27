@@ -65,9 +65,6 @@ The goal was to feel like a natural extension of LinkedIn, not a redesign — so
 | Service | Purpose | Endpoint |
 |---|---|---|
 | [unavatar.io](https://unavatar.io) | Fetch LinkedIn profile photos by username | `https://unavatar.io/linkedin/{username}` |
-| [Smashing Magazine CDN](https://www.smashingmagazine.com) | Post thumbnail images for Design Token and UX Impact articles | `https://files.smashing.media/articles/...` |
-| [Wixstatic CDN](https://www.humantific.com) | HUMANTIFIC book cover (Innovation Methods Mapping) | `https://static.wixstatic.com/media/...` |
-| [Anima Blog](https://www.animaapp.com/blog) | Figma-to-HTML post thumbnail | `https://www.animaapp.com/blog/wp-content/...` |
 
 ### Profile photos resolved via unavatar.io
 
