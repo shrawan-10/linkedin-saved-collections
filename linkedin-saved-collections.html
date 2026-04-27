@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn — Saved Posts</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #0A66C2;
+    --blue-hover: #004182;
+    --blue-light: #EBF4FF;
+    --bg: #F3F2EF;
+    --white: #FFFFFF;
+    --text-primary: rgba(0,0,0,0.9);
+    --text-secondary: rgba(0,0,0,0.6);
+    --text-muted: rgba(0,0,0,0.45);
+    --border: rgba(0,0,0,0.12);
+    --border-light: rgba(0,0,0,0.08);
+    --green: #057642;
+    --green-bg: #057642;
+    --shadow-sm: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.08);
+    --radius: 8px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  /* ─── TOPNAV ─── */
+  .topnav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border-light);
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
+  }
+
+  .topnav-logo {
+    width: 34px;
+    height: 34px;
+    background: var(--blue);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .topnav-logo svg { width: 22px; height: 22px; fill: white; }
+
+  .topnav-search {
+    display: flex;
+    align-items: center;
+    background: #EEF3F8;
+    border-radius: 4px;
+    padding: 0 12px;
+    height: 34px;
+    gap: 6px;
+    width: 280px;
+    cursor: text;
+  }
+
+  .topnav-search svg { width: 16px; height: 16px; fill: var(--text-secondary); flex-shrink: 0; }
+  .topnav-search span { font-size: 14px; color: var(--text-secondary); }
+
+  .topnav-spacer { flex: 1; }
+
+  .topnav-items {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .topnav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 11px;
+    min-width: 52px;
+    transition: color 0.15s;
+    position: relative;
+  }
+
+  .topnav-item:hover { color: var(--text-primary); background: rgba(0,0,0,0.03); }
+  .topnav-item svg { width: 24px; height: 24px; fill: currentColor; }
+
+  .topnav-item.active {
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--text-primary);
+    border-radius: 0;
+  }
+
+  /* ─── PAGE LAYOUT ─── */
+  .page {
+    max-width: 980px;
+    margin: 24px auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .sidebar-header {
+    padding: 14px 16px 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sidebar-header svg { width: 16px; height: 16px; fill: var(--text-secondary); }
+
+  .sidebar-nav { padding: 4px 0; }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.12s;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar-link:hover { background: rgba(0,0,0,0.03); }
+
+  .sidebar-link.active {
+    font-weight: 600;
+    border-left: 3px solid var(--blue);
+    background: rgba(10,102,194,0.04);
+    color: var(--text-primary);
+  }
+
+  .sidebar-badge {
+    background: #E7A33E;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 1px 6px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  /* ─── MAIN ─── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .main-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ─── HEADER SECTION ─── */
+  .saved-header {
+    padding: 20px 20px 0;
+  }
+
+  .saved-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+  }
+
+  .collection-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  /* Collection Dropdown Trigger */
+  .collection-dropdown-wrap {
+    position: relative;
+  }
+
+  .collection-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    background: var(--white);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: var(--font);
+    line-height: 1;
+  }
+
+  .collection-btn:hover { border-color: var(--text-primary); background: rgba(0,0,0,0.02); }
+  .collection-btn.open { border-color: var(--blue); color: var(--blue); }
+
+  .collection-btn svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    transition: transform 0.2s;
+  }
+
+  .collection-btn.open svg.chevron { transform: rotate(180deg); }
+
+  /* Collection Dropdown Panel */
+  .collection-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    min-width: 240px;
+    z-index: 200;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  .collection-panel.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  .collection-panel-list { padding: 4px 0; }
+
+  .collection-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.1s;
+    gap: 8px;
+  }
+
+  .collection-option:hover { background: rgba(0,0,0,0.04); }
+
+  .collection-option.selected { background: rgba(10,102,194,0.06); }
+
+  .collection-option-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .collection-option-name {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 400;
+  }
+
+  .collection-option.selected .collection-option-name { font-weight: 600; color: var(--blue); }
+
+  .collection-option-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .collection-check {
+    width: 16px;
+    height: 16px;
+    fill: var(--blue);
+    flex-shrink: 0;
+  }
+
+  .collection-panel-divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 4px 0;
+  }
+
+  .collection-option-new {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.1s;
+  }
+
+  .collection-option-new:hover { background: rgba(10,102,194,0.06); }
+  .collection-option-new svg { width: 16px; height: 16px; fill: var(--blue); }
+
+  /* New Collection Button */
+  .new-collection-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border: none;
+    border-radius: 100px;
+    background: var(--blue);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: var(--font);
+    line-height: 1;
+  }
+
+  .new-collection-btn:hover { background: var(--blue-hover); }
+  .new-collection-btn svg { width: 14px; height: 14px; fill: white; }
+
+  /* Filter tabs */
+  .filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 12px;
+    padding-top: 0;
+  }
+
+  .filter-tab {
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+    font-family: var(--font);
+  }
+
+  .filter-tab:hover { border-color: var(--text-primary); color: var(--text-primary); }
+  .filter-tab.active { background: var(--green-bg); border-color: var(--green-bg); color: white; }
+
+  /* ─── POST CARDS ─── */
+  .post-card {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+    transition: background 0.1s;
+  }
+
+  .post-card:last-child { border-bottom: none; }
+  .post-card:hover { background: rgba(0,0,0,0.015); }
+
+  .post-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .author-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    font-family: var(--font);
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .author-info { flex: 1; min-width: 0; }
+
+  .author-name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .author-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+
+  .author-name:hover { color: var(--blue); text-decoration: underline; }
+
+  .degree-badge {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .author-headline {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+
+  .author-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .author-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .author-meta svg { width: 12px; height: 12px; fill: var(--text-secondary); }
+
+  .post-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: background 0.1s, color 0.1s;
+  }
+
+  .icon-btn:hover { background: rgba(0,0,0,0.06); color: var(--text-primary); }
+  .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+  .icon-btn.saved { color: var(--blue); }
+
+  /* Collection tag */
+  .collection-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    background: var(--blue-light);
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--blue);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .collection-tag:hover { background: #D4E8FF; }
+  .collection-tag svg { width: 10px; height: 10px; fill: var(--blue); }
+
+  /* Post content row */
+  .post-content-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .post-preview-img {
+    width: 120px;
+    height: 80px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: #EEF3F8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+  }
+
+  .post-preview-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+
+  .post-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .post-text p {
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .see-more {
+    color: var(--text-secondary);
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .see-more:hover { color: var(--text-primary); }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    padding: 48px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .empty-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--blue-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty-icon svg { width: 32px; height: 32px; fill: var(--blue); }
+  .empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+  .empty-state p { font-size: 14px; color: var(--text-secondary); max-width: 260px; }
+
+  /* ─── BACKDROP / OVERLAY ─── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ─── MODAL ─── */
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.2s;
+    overflow: hidden;
+    margin: 16px;
+  }
+
+  .overlay.open .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: background 0.1s;
+  }
+
+  .modal-close:hover { background: rgba(0,0,0,0.06); color: var(--text-primary); }
+  .modal-close svg { width: 20px; height: 20px; fill: currentColor; }
+
+  .modal-body { padding: 8px 0; max-height: 360px; overflow-y: auto; }
+
+  .modal-collection-item {
+    display: flex;
+    align-items: center;
+    padding: 11px 20px;
+    cursor: pointer;
+    gap: 12px;
+    transition: background 0.1s;
+  }
+
+  .modal-collection-item:hover { background: rgba(0,0,0,0.04); }
+
+  .modal-radio {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+  }
+
+  .modal-collection-item.selected .modal-radio {
+    border-color: var(--blue);
+    background: var(--blue);
+  }
+
+  .modal-radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .modal-collection-item.selected .modal-radio-dot { opacity: 1; }
+
+  .modal-collection-info { flex: 1; }
+
+  .modal-collection-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .modal-collection-item.selected .modal-collection-name {
+    color: var(--blue);
+    font-weight: 600;
+  }
+
+  .modal-collection-count {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 1px;
+  }
+
+  .modal-divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 4px 0;
+  }
+
+  .modal-new-collection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 20px;
+    cursor: pointer;
+    color: var(--blue);
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.1s;
+  }
+
+  .modal-new-collection:hover { background: rgba(10,102,194,0.05); }
+  .modal-new-collection svg { width: 20px; height: 20px; fill: var(--blue); }
+
+  /* Inline new collection form inside modal */
+  .new-collection-form {
+    padding: 12px 20px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    border-top: 1px solid var(--border-light);
+    background: rgba(10,102,194,0.03);
+  }
+
+  .new-collection-form.show { display: flex; }
+
+  .new-collection-form label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .new-collection-form input {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .new-collection-form input:focus { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+  .new-collection-form input::placeholder { color: var(--text-muted); }
+
+  .new-collection-form-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-create {
+    padding: 8px 16px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .btn-create:hover { background: var(--blue-hover); }
+
+  .btn-cancel-create {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: all 0.15s;
+  }
+
+  .btn-cancel-create:hover { border-color: var(--text-primary); color: var(--text-primary); }
+
+  .modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-save {
+    padding: 10px 24px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.15s;
+  }
+
+  .btn-save:hover { background: var(--blue-hover); }
+
+  /* ─── NEW COLLECTION MODAL (from main button) ─── */
+  .create-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .create-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .create-modal {
+    background: var(--white);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.2s;
+    overflow: hidden;
+    margin: 16px;
+  }
+
+  .create-overlay.open .create-modal { transform: scale(1) translateY(0); }
+
+  .create-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .create-modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .create-modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .create-modal-body label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .create-modal-body input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .create-modal-body input:focus { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+  .create-modal-body input::placeholder { color: var(--text-muted); }
+
+  .create-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: #1D1D1D;
+    color: white;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  .modal-body::-webkit-scrollbar { width: 4px; }
+  .modal-body::-webkit-scrollbar-track { background: transparent; }
+  .modal-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="topnav-logo">
+    <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  </div>
+  <div class="topnav-search">
+    <svg viewBox="0 0 24 24"><path d="M21.71 20.29l-4.51-4.5A8.44 8.44 0 0019 11a8 8 0 10-8 8 8.44 8.44 0 004.79-1.8l4.5 4.51a1 1 0 001.42-1.42zM5 11a6 6 0 116 6 6 6 0 01-6-6z"/></svg>
+    <span>Search</span>
+  </div>
+  <div class="topnav-spacer"></div>
+  <div class="topnav-items">
+    <a class="topnav-item" href="#">
+      <!-- Home: house outline -->
+      <svg viewBox="0 0 24 24"><path d="M23 9v2h-2v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7H1V9l11-7 11 7zm-5 10v-7H6v7h12zM12 4.6L5 9.3V19h4v-5h6v5h4V9.3L12 4.6z"/></svg>
+      Home
+    </a>
+    <a class="topnav-item" href="#">
+      <!-- My Network: two people -->
+      <svg viewBox="0 0 24 24"><path d="M12 16v6H3v-2c0-2.97 2.16-5.43 5-5.91L12 16zm4-1c2.76 0 5 2.24 5 5v2h-6v-6l-3-1zm-4-1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm8-.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zm0-2a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+      My Network
+    </a>
+    <a class="topnav-item" href="#">
+      <!-- Jobs: briefcase -->
+      <svg viewBox="0 0 24 24"><path d="M20 6h-3V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM9 4h6v2H9V4zm11 15H4V8h16v11z"/></svg>
+      Jobs
+    </a>
+    <a class="topnav-item" href="#">
+      <!-- Messaging: speech bubbles -->
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+      Messaging
+    </a>
+    <a class="topnav-item" href="#">
+      <!-- Notifications: bell -->
+      <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+      Notifications
+    </a>
+    <a class="topnav-item" href="#">
+      <!-- Me: person avatar -->
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Me ▾
+    </a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+      My items
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" href="#">Job tracker</a>
+      <a class="sidebar-link" href="#">
+        My learning
+        <span class="sidebar-badge">4</span>
+      </a>
+      <a class="sidebar-link active" href="#">Saved posts and articles</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-card">
+
+      <!-- Header -->
+      <div class="saved-header">
+        <h1 class="saved-title">Saved Posts</h1>
+
+        <div class="collection-row">
+          <!-- Collection dropdown -->
+          <div class="collection-dropdown-wrap">
+            <button class="collection-btn" id="collectionBtn" onclick="toggleDropdown()">
+              <span id="collectionLabel">All Saved</span>
+              <svg class="chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </button>
+
+            <!-- Dropdown panel -->
+            <div class="collection-panel" id="collectionPanel">
+              <div class="collection-panel-list">
+                <div class="collection-option selected" data-filter="all" onclick="selectCollection(this, 'all', 'All Saved')">
+                  <div class="collection-option-left">
+                    <span class="collection-option-name">All Saved</span>
+                  </div>
+                  <span class="collection-option-count">10+</span>
+                  <svg class="collection-check" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="collection-option" data-filter="UX Research" onclick="selectCollection(this, 'UX Research', 'UX Research')">
+                  <div class="collection-option-left">
+                    <span class="collection-option-name">UX Research</span>
+                  </div>
+                  <span class="collection-option-count">8</span>
+                  <svg class="collection-check" viewBox="0 0 24 24" style="opacity:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="collection-option" data-filter="Design Systems" onclick="selectCollection(this, 'Design Systems', 'Design Systems')">
+                  <div class="collection-option-left">
+                    <span class="collection-option-name">Design Systems</span>
+                  </div>
+                  <span class="collection-option-count">5</span>
+                  <svg class="collection-check" viewBox="0 0 24 24" style="opacity:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="collection-option" data-filter="Frontend Dev" onclick="selectCollection(this, 'Frontend Dev', 'Frontend Dev')">
+                  <div class="collection-option-left">
+                    <span class="collection-option-name">Frontend Dev</span>
+                  </div>
+                  <span class="collection-option-count">12</span>
+                  <svg class="collection-check" viewBox="0 0 24 24" style="opacity:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+                <div class="collection-option" data-filter="Inspiration" onclick="selectCollection(this, 'Inspiration', 'Inspiration')">
+                  <div class="collection-option-left">
+                    <span class="collection-option-name">Inspiration</span>
+                  </div>
+                  <span class="collection-option-count">3</span>
+                  <svg class="collection-check" viewBox="0 0 24 24" style="opacity:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+              </div>
+              <div class="collection-panel-divider"></div>
+              <div class="collection-option-new" onclick="openCreateModal()">
+                <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                New Collection
+              </div>
+            </div>
+          </div>
+
+          <button class="new-collection-btn" onclick="openCreateModal()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            New Collection
+          </button>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <button class="filter-tab active">All</button>
+          <button class="filter-tab">Articles</button>
+        </div>
+      </div>
+
+      <!-- POST CARDS -->
+      <div id="postsList">
+
+        <!-- Card 1 -->
+        <div class="post-card" data-collection="Design Systems">
+          <div class="post-card-header">
+            <div class="author-avatar" style="background: linear-gradient(135deg, #0A66C2, #004182)">VF</div>
+            <div class="author-info">
+              <div class="author-name-row">
+                <span class="author-name">Vitaly Friedman</span>
+                <span class="degree-badge">· 2nd</span>
+              </div>
+              <div class="author-headline">Practical insights for better UX · Running "Measure UX" a…</div>
+              <div class="author-meta">
+                <span class="author-time">1d</span>
+                <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 14.5A6.5 6.5 0 1114.5 8 6.51 6.51 0 018 14.5zM7 11h2v2H7zm0-8h2v5.5H7z"/></svg>
+              </div>
+            </div>
+            <div class="post-card-actions">
+              <button class="icon-btn saved" onclick="openSaveModal(this)" title="Saved — click to move collection">
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+              </button>
+              <button class="icon-btn" title="More options">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="collection-tag" onclick="selectCollectionByTag('Design Systems')">
+            <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36 0-2.13-2.52-4.64-5.64-4.64-1.7 0-3.21.81-4.19 2.08C7.17.81 5.66 0 3.96 0 .84 0-1.68 2.51-1.68 4.64c0 .48.1.92.18 1.36H-2v2h22V6z"/></svg>
+            Design Systems
+          </div>
+          <div class="post-content-row">
+            <div class="post-preview-img">
+              <div class="post-preview-inner" style="background: linear-gradient(135deg, #EBF4FF, #D4E8FF); font-size:13px; font-weight:700; color:#0A66C2; text-align:center; padding:8px; line-height:1.3;">Design Token<br/>Naming Guide</div>
+            </div>
+            <div class="post-text">
+              <p>🧠 Free Design Token Naming Guide + Builder — a wonderful resource for naming design tokens — from learning how they work and <span class="see-more">…see more</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="post-card" data-collection="UX Research">
+          <div class="post-card-header">
+            <div class="author-avatar" style="background: linear-gradient(135deg, #6B7280, #374151)">GK</div>
+            <div class="author-info">
+              <div class="author-name-row">
+                <span class="author-name">GK VanPatter</span>
+                <span class="degree-badge">· 3rd+</span>
+              </div>
+              <div class="author-headline">Author, Advisor, CoFounder, HUMANTIFIC / SenseMaking…</div>
+              <div class="author-meta">
+                <span class="author-time">1d</span>
+                <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 14.5A6.5 6.5 0 1114.5 8 6.51 6.51 0 018 14.5zM7 11h2v2H7zm0-8h2v5.5H7z"/></svg>
+              </div>
+            </div>
+            <div class="post-card-actions">
+              <button class="icon-btn saved" onclick="openSaveModal(this)" title="Saved — click to move collection">
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+              </button>
+              <button class="icon-btn" title="More options">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="collection-tag" onclick="selectCollectionByTag('UX Research')">
+            <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36 0-2.13-2.52-4.64-5.64-4.64-1.7 0-3.21.81-4.19 2.08C7.17.81 5.66 0 3.96 0 .84 0-1.68 2.51-1.68 4.64c0 .48.1.92.18 1.36H-2v2h22V6z"/></svg>
+            UX Research
+          </div>
+          <div class="post-content-row">
+            <div class="post-preview-img">
+              <div class="post-preview-inner" style="background: linear-gradient(135deg, #FEF3C7, #FDE68A);">📊</div>
+            </div>
+            <div class="post-text">
+              <p>DESIGN FOR COMPLEXITY / Chapter in Progress — UNPACKING/TRANSCENDING DOUBLE DIAMOND ILLUSIONS <span class="see-more">…see more</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="post-card" data-collection="Design Systems">
+          <div class="post-card-header">
+            <div class="author-avatar" style="background: linear-gradient(135deg, #EF4444, #B91C1C)">RH</div>
+            <div class="author-info">
+              <div class="author-name-row">
+                <span class="author-name">Robin Holesinsky</span>
+                <span class="degree-badge">· 2nd</span>
+              </div>
+              <div class="author-headline">I help funded startups grow revenue through design |…</div>
+              <div class="author-meta">
+                <span class="author-time">3w</span>
+                <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 14.5A6.5 6.5 0 1114.5 8 6.51 6.51 0 018 14.5zM7 11h2v2H7zm0-8h2v5.5H7z"/></svg>
+              </div>
+            </div>
+            <div class="post-card-actions">
+              <button class="icon-btn saved" onclick="openSaveModal(this)" title="Saved — click to move collection">
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+              </button>
+              <button class="icon-btn" title="More options">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="collection-tag" onclick="selectCollectionByTag('Design Systems')">
+            <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36 0-2.13-2.52-4.64-5.64-4.64-1.7 0-3.21.81-4.19 2.08C7.17.81 5.66 0 3.96 0 .84 0-1.68 2.51-1.68 4.64c0 .48.1.92.18 1.36H-2v2h22V6z"/></svg>
+            Design Systems
+          </div>
+          <div class="post-content-row">
+            <div class="post-preview-img">
+              <div class="post-preview-inner" style="background: linear-gradient(135deg, #FCE7F3, #FBCFE8);">
+                <span style="font-size:32px;">🔗</span>
+              </div>
+            </div>
+            <div class="post-text">
+              <p>Figma to prod HTML/CSS in 10 minutes. Game changer. Here's the exact system I use (5 stages): <span class="see-more">…see more</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="post-card" data-collection="UX Research">
+          <div class="post-card-header">
+            <div class="author-avatar" style="background: linear-gradient(135deg, #0A66C2, #004182)">VF</div>
+            <div class="author-info">
+              <div class="author-name-row">
+                <span class="author-name">Vitaly Friedman</span>
+                <span class="degree-badge">· 2nd</span>
+              </div>
+              <div class="author-headline">Practical insights for better UX · Running "Measure UX" a…</div>
+              <div class="author-meta">
+                <span class="author-time">1mo</span>
+                <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 14.5A6.5 6.5 0 1114.5 8 6.51 6.51 0 018 14.5zM7 11h2v2H7zm0-8h2v5.5H7z"/></svg>
+              </div>
+            </div>
+            <div class="post-card-actions">
+              <button class="icon-btn saved" onclick="openSaveModal(this)" title="Saved — click to move collection">
+                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+              </button>
+              <button class="icon-btn" title="More options">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="collection-tag" onclick="selectCollectionByTag('UX Research')">
+            <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36 0-2.13-2.52-4.64-5.64-4.64-1.7 0-3.21.81-4.19 2.08C7.17.81 5.66 0 3.96 0 .84 0-1.68 2.51-1.68 4.64c0 .48.1.92.18 1.36H-2v2h22V6z"/></svg>
+            UX Research
+          </div>
+          <div class="post-content-row">
+            <div class="post-preview-img">
+              <div class="post-preview-inner" style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5);">
+                <span style="font-size:11px; font-weight:700; color:#057642; text-align:center; padding:6px; line-height:1.3;">Research<br/>Impact</span>
+              </div>
+            </div>
+            <div class="post-text">
+              <p>📐 How To Measure UX Research Impact (+ PDF) — an updated framework to define and measure UX research impact across UX, busi… <span class="see-more">…see more</span></p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /postsList -->
+
+      <!-- Empty state (hidden by default) -->
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        </div>
+        <h3>No posts in this collection</h3>
+        <p>Save posts to this collection to see them here.</p>
+      </div>
+
+    </div><!-- /main-card -->
+  </main>
+</div><!-- /page -->
+
+<!-- ─── SAVE TO COLLECTION MODAL ─── -->
+<div class="overlay" id="saveOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Save to collection</span>
+      <button class="modal-close" onclick="closeSaveModal()">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalCollectionList">
+      <div class="modal-collection-item selected" data-name="All Saved" onclick="selectModalCollection(this)">
+        <div class="modal-radio"><div class="modal-radio-dot"></div></div>
+        <div class="modal-collection-info">
+          <div class="modal-collection-name">All Saved</div>
+          <div class="modal-collection-count">10+ items</div>
+        </div>
+      </div>
+      <div class="modal-collection-item" data-name="UX Research" onclick="selectModalCollection(this)">
+        <div class="modal-radio"><div class="modal-radio-dot"></div></div>
+        <div class="modal-collection-info">
+          <div class="modal-collection-name">UX Research</div>
+          <div class="modal-collection-count">8 items</div>
+        </div>
+      </div>
+      <div class="modal-collection-item" data-name="Design Systems" onclick="selectModalCollection(this)">
+        <div class="modal-radio"><div class="modal-radio-dot"></div></div>
+        <div class="modal-collection-info">
+          <div class="modal-collection-name">Design Systems</div>
+          <div class="modal-collection-count">5 items</div>
+        </div>
+      </div>
+      <div class="modal-collection-item" data-name="Frontend Dev" onclick="selectModalCollection(this)">
+        <div class="modal-radio"><div class="modal-radio-dot"></div></div>
+        <div class="modal-collection-info">
+          <div class="modal-collection-name">Frontend Dev</div>
+          <div class="modal-collection-count">12 items</div>
+        </div>
+      </div>
+      <div class="modal-collection-item" data-name="Inspiration" onclick="selectModalCollection(this)">
+        <div class="modal-radio"><div class="modal-radio-dot"></div></div>
+        <div class="modal-collection-info">
+          <div class="modal-collection-name">Inspiration</div>
+          <div class="modal-collection-count">3 items</div>
+        </div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="modal-new-collection" onclick="toggleModalNewForm()">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        Create new collection
+      </div>
+      <div class="new-collection-form" id="modalNewForm">
+        <label>Collection name</label>
+        <input type="text" id="modalNewInput" placeholder="e.g. Product Strategy" maxlength="60">
+        <div class="new-collection-form-row">
+          <button class="btn-create" onclick="createFromModal()">Create</button>
+          <button class="btn-cancel-create" onclick="cancelModalNew()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-save" onclick="saveToCollection()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CREATE COLLECTION MODAL ─── -->
+<div class="create-overlay" id="createOverlay" onclick="handleCreateOverlayClick(event)">
+  <div class="create-modal">
+    <div class="create-modal-header">
+      <span class="create-modal-title">New Collection</span>
+      <button class="modal-close" onclick="closeCreateModal()">
+        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+      </button>
+    </div>
+    <div class="create-modal-body">
+      <div>
+        <label for="createInput">Collection name</label>
+        <input type="text" id="createInput" placeholder="e.g. Product Strategy" maxlength="60">
+      </div>
+    </div>
+    <div class="create-modal-footer">
+      <button class="btn-cancel-create" onclick="closeCreateModal()">Cancel</button>
+      <button class="btn-create" onclick="createCollection()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentFilter = 'all';
+  let dropdownOpen = false;
+
+  // ─── DROPDOWN ───
+  function toggleDropdown() {
+    dropdownOpen = !dropdownOpen;
+    const panel = document.getElementById('collectionPanel');
+    const btn = document.getElementById('collectionBtn');
+    panel.classList.toggle('open', dropdownOpen);
+    btn.classList.toggle('open', dropdownOpen);
+  }
+
+  function selectCollection(el, filter, label) {
+    // Update UI
+    document.querySelectorAll('.collection-option').forEach(opt => {
+      opt.classList.remove('selected');
+      opt.querySelector('.collection-check').style.opacity = '0';
+    });
+    el.classList.add('selected');
+    el.querySelector('.collection-check').style.opacity = '1';
+
+    document.getElementById('collectionLabel').textContent = label;
+    currentFilter = filter;
+
+    toggleDropdown();
+    filterPosts(filter);
+  }
+
+  function selectCollectionByTag(name) {
+    const opts = document.querySelectorAll('.collection-option');
+    opts.forEach(opt => {
+      if (opt.dataset.filter === name) {
+        selectCollection(opt, name, name);
+      }
+    });
+  }
+
+  // Close dropdown on outside click
+  document.addEventListener('click', function(e) {
+    if (dropdownOpen && !e.target.closest('.collection-dropdown-wrap')) {
+      dropdownOpen = false;
+      document.getElementById('collectionPanel').classList.remove('open');
+      document.getElementById('collectionBtn').classList.remove('open');
+    }
+  });
+
+  // ─── FILTER POSTS ───
+  function filterPosts(filter) {
+    const cards = document.querySelectorAll('.post-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      if (filter === 'all' || card.dataset.collection === filter) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    document.getElementById('emptyState').style.display = visibleCount === 0 ? 'flex' : 'none';
+  }
+
+  // ─── SAVE MODAL ───
+  let activeBookmarkBtn = null;
+
+  function openSaveModal(btn) {
+    activeBookmarkBtn = btn;
+    // Pre-select based on card's collection
+    const card = btn.closest('.post-card');
+    const cardCollection = card ? card.dataset.collection : 'All Saved';
+    preselectModal(cardCollection);
+
+    document.getElementById('saveOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function preselectModal(collectionName) {
+    document.querySelectorAll('.modal-collection-item').forEach(item => {
+      item.classList.remove('selected');
+      if (item.dataset.name === collectionName) item.classList.add('selected');
+    });
+  }
+
+  function closeSaveModal() {
+    document.getElementById('saveOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    cancelModalNew();
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('saveOverlay')) closeSaveModal();
+  }
+
+  function selectModalCollection(el) {
+    document.querySelectorAll('.modal-collection-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleModalNewForm() {
+    const form = document.getElementById('modalNewForm');
+    form.classList.add('show');
+    document.getElementById('modalNewInput').focus();
+  }
+
+  function cancelModalNew() {
+    const form = document.getElementById('modalNewForm');
+    form.classList.remove('show');
+    document.getElementById('modalNewInput').value = '';
+  }
+
+  function createFromModal() {
+    const input = document.getElementById('modalNewInput');
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+
+    addNewCollection(name);
+    cancelModalNew();
+
+    // Add to modal list and select it
+    const item = createModalItem(name, '0 items');
+    const divider = document.querySelector('.modal-divider');
+    document.getElementById('modalCollectionList').insertBefore(item, divider);
+    preselectModal(name);
+  }
+
+  function createModalItem(name, countText) {
+    const div = document.createElement('div');
+    div.className = 'modal-collection-item';
+    div.dataset.name = name;
+    div.onclick = function() { selectModalCollection(this); };
+    div.innerHTML = `
+      <div class="modal-radio"><div class="modal-radio-dot"></div></div>
+      <div class="modal-collection-info">
+        <div class="modal-collection-name">${escapeHtml(name)}</div>
+        <div class="modal-collection-count">${countText}</div>
+      </div>`;
+    return div;
+  }
+
+  function saveToCollection() {
+    const selected = document.querySelector('.modal-collection-item.selected');
+    if (!selected) return;
+    const collName = selected.dataset.name;
+
+    // Update card's collection tag if bookmark was from a card
+    if (activeBookmarkBtn) {
+      const card = activeBookmarkBtn.closest('.post-card');
+      if (card && collName !== 'All Saved') {
+        card.dataset.collection = collName;
+        const tag = card.querySelector('.collection-tag');
+        if (tag) {
+          tag.innerHTML = `<svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36 0-2.13-2.52-4.64-5.64-4.64-1.7 0-3.21.81-4.19 2.08C7.17.81 5.66 0 3.96 0 .84 0-1.68 2.51-1.68 4.64c0 .48.1.92.18 1.36H-2v2h22V6z"/></svg>${escapeHtml(collName)}`;
+          tag.onclick = function() { selectCollectionByTag(collName); };
+        }
+      }
+    }
+
+    showToast(`Saved to "${collName}"`);
+    closeSaveModal();
+
+    // Re-apply filter
+    filterPosts(currentFilter);
+  }
+
+  // ─── CREATE COLLECTION MODAL ───
+  function openCreateModal() {
+    // Close dropdown if open
+    if (dropdownOpen) {
+      dropdownOpen = false;
+      document.getElementById('collectionPanel').classList.remove('open');
+      document.getElementById('collectionBtn').classList.remove('open');
+    }
+    document.getElementById('createOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('createInput').focus(), 150);
+  }
+
+  function closeCreateModal() {
+    document.getElementById('createOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('createInput').value = '';
+  }
+
+  function handleCreateOverlayClick(e) {
+    if (e.target === document.getElementById('createOverlay')) closeCreateModal();
+  }
+
+  function createCollection() {
+    const input = document.getElementById('createInput');
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+
+    addNewCollection(name);
+    showToast(`Collection "${name}" created`);
+    closeCreateModal();
+  }
+
+  function addNewCollection(name) {
+    // Add to dropdown panel
+    const panel = document.querySelector('.collection-panel-list');
+    const divLine = document.querySelector('.collection-panel-divider');
+
+    const opt = document.createElement('div');
+    opt.className = 'collection-option';
+    opt.dataset.filter = name;
+    opt.innerHTML = `
+      <div class="collection-option-left">
+        <span class="collection-option-name">${escapeHtml(name)}</span>
+      </div>
+      <span class="collection-option-count">0</span>
+      <svg class="collection-check" viewBox="0 0 24 24" style="opacity:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+    opt.onclick = function() { selectCollection(this, name, name); };
+
+    panel.insertBefore(opt, divLine);
+  }
+
+  // ─── FILTER TABS ───
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // ─── UTILS ───
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Keyboard: Escape closes modals
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeSaveModal();
+      closeCreateModal();
+      if (dropdownOpen) {
+        dropdownOpen = false;
+        document.getElementById('collectionPanel').classList.remove('open');
+        document.getElementById('collectionBtn').classList.remove('open');
+      }
+    }
+  });
+
+  // Enter key in create input
+  document.getElementById('createInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') createCollection();
+  });
+  document.getElementById('modalNewInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') createFromModal();
+  });
+</script>
+</body>
+</html>
